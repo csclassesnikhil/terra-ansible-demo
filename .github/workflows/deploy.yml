@@ -1,0 +1,36 @@
+name: Deploy Infrastructure and App
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: MY_ENV  
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Terraform Init
+        run: terraform init
+        working-directory: terraform
+
+      - name: Terraform Apply
+        run: terraform apply -auto-approve -var "key_name=${{ secrets.KEY_NAME }}"
+        working-directory: terraform
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.ACCESS_KEY }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.SECRET_ACCESS_KEY }}
+
+      - name: Get EC2 Public IP
+        id: tf
+        run: echo "IP=$(terraform output -raw public_ip)" >> $GITHUB_OUTPUT
+        working-directory: terraform
+
+      
