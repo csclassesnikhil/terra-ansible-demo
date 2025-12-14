@@ -33,4 +33,20 @@ jobs:
         run: echo "IP=$(terraform output -raw public_ip)" >> $GITHUB_OUTPUT
         working-directory: terraform
 
+      - name: Setup SSH Key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.EC2_SSH_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+
+      - name: Install Ansible
+        run: sudo apt update && sudo apt install -y ansible
+
+      - name: Update Ansible Inventory
+        run: |
+          sed -i "s/EC2_PUBLIC_IP/${{ steps.tf.outputs.IP }}/" ansible/inventory.ini
+
+      - name: Run Ansible Playbook
+        run: ansible-playbook -i ansible/inventory.ini ansible/playbook.yml  
+
       
