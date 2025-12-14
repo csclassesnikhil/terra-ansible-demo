@@ -1,3 +1,3 @@
-output "demo_ec2" {
-value = aws_instance.web.public_ip
+output "public_ip" {
+value = aws_instance.demo_ec2.public_ip
 }
