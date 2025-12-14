@@ -31,8 +31,8 @@ data "aws_subnets" "default" {
   }
 }
 
-resource "aws_security_group" "web-sg-baba" {
-name = "web-sg-baba"
+resource "aws_security_group" "web-sg-laba" {
+name = "web-sg-laba"
 
 
 ingress {
@@ -69,7 +69,7 @@ resource "aws_instance" "demo_ec2" {
   instance_type = "t2.micro"
   subnet_id     = data.aws_subnets.default.ids[0]
   key_name      = var.key_name
-  vpc_security_group_ids = [aws_security_group.web-sg-baba.id] 
+  vpc_security_group_ids = [aws_security_group.web-sg-laba.id] 
 
   tags = {
     Name = "terraform-demo-ec2"
