@@ -31,6 +31,34 @@ data "aws_subnets" "default" {
   }
 }
 
+resource "aws_security_group" "web_sg" {
+name = "web-sg"
+
+
+ingress {
+from_port = 22
+to_port = 22
+protocol = "tcp"
+cidr_blocks = ["0.0.0.0/0"]
+}
+
+
+ingress {
+from_port = 5000
+to_port = 5000
+protocol = "tcp"
+cidr_blocks = ["0.0.0.0/0"]
+}
+
+
+egress {
+from_port = 0
+to_port = 0
+protocol = "-1"
+cidr_blocks = ["0.0.0.0/0"]
+  }
+}
+
 
 
 # ----------------------------
@@ -40,7 +68,8 @@ resource "aws_instance" "demo_ec2" {
   ami           = data.aws_ami.amazon_linux.id
   instance_type = "t2.micro"
   subnet_id     = data.aws_subnets.default.ids[0]
-  key_name      = var.key_name 
+  key_name      = var.key_name
+  vpc_security_group_ids = [aws_security_group.web_sg.id] 
 
   tags = {
     Name = "terraform-demo-ec2"
